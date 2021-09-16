@@ -45,14 +45,14 @@ def ref(matrix):
     return matrix  # Возвращаем полученную матрицу
 
 
-def no_zero_matrix(matrix):
-    r = 0
-    while r < row_size(matrix):
-        if np.all(matrix[r, :] == 0):
-            matrix = np.delete(matrix, r, 0)
-            r = r
+def no_zero_matrix(matrix):  # Убираем нулевые строчки
+    r = 0  # Первая строчка
+    while r < row_size(matrix):  # Пока не пройдем все строчки
+        if np.all(matrix[r, :] == 0):  # Если все элементы строчки = 0
+            matrix = np.delete(matrix, r, 0)  # Удаляем эту строчку
+            r = r  # Не сдвигаем номер строчки
         else:
-            r += 1
+            r += 1 # Если ничего не удаляли, то переходим к новой строчке
     return matrix
 
 
