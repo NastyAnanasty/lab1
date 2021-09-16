@@ -1,9 +1,15 @@
+import copy
+
 import numpy as np
 
 
 # Создаем рандомную матрицу, заполненную 0 и 1 по заданному количеству строк и столбцов
 def create_matrix(row, column):
-    return np.random.randint(0, 2, (row, column))
+    matrix = np.random.randint(0, 9, (row, column))
+    print(matrix)
+    for r in range(0, row):
+        matrix[r] = matrix[r] % 2
+    return matrix
 
 
 # Поменять местами две заданные строчки матрицы
@@ -44,24 +50,26 @@ def ref(matrix):
         column += 1  # Переходим к следующему столбцу
     return matrix  # Возвращаем полученную матрицу
 
-def rref(originalMatrix): 
+
+def rref(originalMatrix):
     matrix = copy.deepcopy(ref(originalMatrix))
     m = matrix.shape[0]
     n = matrix.shape[1]
     step = 0
     for i in range(m):
         for j in range(step, n):
-            if matrix[i][j] == 1: # убираем значения выше ведущих элементов
+            if matrix[i][j] == 1:  # убираем значения выше ведущих элементов
                 for k in range(0, i):
                     matrix[k][j] = 0
-                if i != m-1:
+                if i != m - 1:
                     i += 1
                     step = i
                 else:
                     return matrix
-            if j == n-1 and matrix[i][j] == 0: # если дошли до нулевой строки делаем обрезание
-                return matrix[1:i-1, :]
+            if j == n - 1 and matrix[i][j] == 0:  # если дошли до нулевой строки делаем обрезание
+                return matrix[1:i - 1, :]
     return matrix
+
 
 # Убираем нулевые строчки
 def no_zero_matrix(matrix):
@@ -71,14 +79,13 @@ def no_zero_matrix(matrix):
             matrix = np.delete(matrix, r, 0)  # Удаляем эту строчку
             r = r  # Не сдвигаем номер строчки
         else:
-            r += 1 # Если ничего не удаляли, то переходим к новой строчке
+            r += 1  # Если ничего не удаляли, то переходим к новой строчке
     return matrix
 
 
 if __name__ == '__main__':
-    rand_matrix = create_matrix(6, 11)  # Создаем матрицу, размер пишем в ()
-    print('Исходная матрица:')
-    print(rand_matrix)
+    rand_matrix = create_matrix(10, 5)  # Создаем матрицу, размер пишем в ()
+    print('Исходная матрица: ' + rand_matrix)
     step_matrix = ref(rand_matrix)
     print('Ступенчатая матрица:')
     print(step_matrix)
