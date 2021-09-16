@@ -44,8 +44,8 @@ def ref(matrix):
         column += 1  # Переходим к следующему столбцу
     return matrix  # Возвращаем полученную матрицу
 
-
-def no_zero_matrix(matrix):  # Убираем нулевые строчки
+# Убираем нулевые строчки
+def no_zero_matrix(matrix):
     r = 0  # Первая строчка
     while r < row_size(matrix):  # Пока не пройдем все строчки
         if np.all(matrix[r, :] == 0):  # Если все элементы строчки = 0
