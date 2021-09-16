@@ -31,7 +31,7 @@ def ref(matrix):
     column = 0  # Первый столбец
     leadrow = 0  # Ведущая строка
     while column < column_size(matrix):  # Идём по столбцам матрицы
-        for r in range(leadrow+1, row_size(matrix)):  # Идём от следующей от ведущей строки до последней строки
+        for r in range(leadrow + 1, row_size(matrix)):  # Идём от следующей от ведущей строки до последней строки
             if matrix[r][column] > matrix[leadrow][column]:  # Если элемент больше
                 currentrow = r  # Запоминаем строчку
                 swap_rows(matrix, currentrow, leadrow)  # Меняем строчку, чтобы была новая ведущая
@@ -45,9 +45,24 @@ def ref(matrix):
     return matrix  # Возвращаем полученную матрицу
 
 
+def no_zero_matrix(matrix):
+    r = 0
+    while r < row_size(matrix):
+        if np.all(matrix[r, :] == 0):
+            matrix = np.delete(matrix, r, 0)
+            r = r
+        else:
+            r += 1
+    return matrix
+
+
 if __name__ == '__main__':
-    rand_matrix = create_matrix(5, 10)  # Создаем матрицу, размер пишем в ()
+    rand_matrix = create_matrix(6, 11)  # Создаем матрицу, размер пишем в ()
+    print('Исходная матрица:')
     print(rand_matrix)
     step_matrix = ref(rand_matrix)
+    print('Ступенчатая матрица:')
     print(step_matrix)
-
+    no_zero = no_zero_matrix(step_matrix)
+    print('Ступенчатая матрица без нулей:')
+    print(no_zero)
