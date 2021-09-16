@@ -44,6 +44,25 @@ def ref(matrix):
         column += 1  # Переходим к следующему столбцу
     return matrix  # Возвращаем полученную матрицу
 
+def rref(originalMatrix): 
+    matrix = copy.deepcopy(REF(originalMatrix))
+    m = matrix.shape[0]
+    n = matrix.shape[1]
+    step = 0
+    for i in range(m):
+        for j in range(step, n):
+            if matrix[i][j] == 1: # убираем значения выше ведущих элементов
+                for k in range(0, i):
+                    matrix[k][j] = 0
+                if i != m-1:
+                    i += 1
+                    step = i
+                else:
+                    return matrix
+            if j == n-1 and matrix[i][j] == 0: # если дошли до нулевой строки делаем обрезание
+                return matrix[1:i-1, :]
+    return matrix
+
 # Убираем нулевые строчки
 def no_zero_matrix(matrix):
     r = 0  # Первая строчка
