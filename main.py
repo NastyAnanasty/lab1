@@ -52,7 +52,7 @@ def ref(matrix):
 
 
 def rref(originalMatrix):
-    matrix = copy.deepcopy(ref(originalMatrix))
+    matrix = copy.deepcopy(no_zero_matrix(ref(originalMatrix)))
     m = matrix.shape[0]
     n = matrix.shape[1]
     step = 0
@@ -66,8 +66,6 @@ def rref(originalMatrix):
                     step = i
                 else:
                     return matrix
-            if j == n - 1 and matrix[i][j] == 0:  # если дошли до нулевой строки делаем обрезание
-                return matrix[1:i - 1, :]
     return matrix
 
 
