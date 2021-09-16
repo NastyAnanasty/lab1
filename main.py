@@ -85,7 +85,8 @@ def no_zero_matrix(matrix):
 
 if __name__ == '__main__':
     rand_matrix = create_matrix(10, 5)  # Создаем матрицу, размер пишем в ()
-    print('Исходная матрица: ' + rand_matrix)
+    print('Исходная матрица: ')
+    print(rand_matrix)
     step_matrix = ref(rand_matrix)
     print('Ступенчатая матрица:')
     print(step_matrix)
