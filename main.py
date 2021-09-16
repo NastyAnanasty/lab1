@@ -45,7 +45,7 @@ def ref(matrix):
     return matrix  # Возвращаем полученную матрицу
 
 def rref(originalMatrix): 
-    matrix = copy.deepcopy(REF(originalMatrix))
+    matrix = copy.deepcopy(ref(originalMatrix))
     m = matrix.shape[0]
     n = matrix.shape[1]
     step = 0
