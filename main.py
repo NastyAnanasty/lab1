@@ -51,23 +51,27 @@ def ref(matrix):
     return matrix  # Возвращаем полученную матрицу
 
 
-def rref(originalMatrix):
-    matrix = copy.deepcopy(no_zero_matrix(ref(originalMatrix)))
-    m = matrix.shape[0]
+def rref(originalMatrix): #приведённый ступенчатый вид
+    matrix = copy.deepcopy(no_zero_matrix(originalMatrix))
+    k = matrix.shape[0]
     n = matrix.shape[1]
-    step = 0
-    for i in range(m):
-        for j in range(step, n):
-            if matrix[i][j] == 1:  # убираем значения выше ведущих элементов
-                for k in range(0, i):
-                    matrix[k][j] = 0
-                if i != m - 1:
-                    i += 1
-                    step = i
-                else:
-                    return matrix
-    return matrix
-
+    curRow = 0 #текущая ступенька
+    for j in range(n): #проходим по всем столбцам
+        for i in range(curRow + 1, k): #по строкам кроме уже построенных ступенек
+            if matrix[i][j] == 1: #в этой строчке на данном столбце 1 быть не может
+                if matrix[curRow][j] == 0: #если ступенька не построена
+                    matrix[curRow] = (matrix[i] + matrix[curRow]) % 2 #строим ступеньку
+                    matrix[i] = (matrix[i] + matrix[curRow]) % 2 #обнуляем 1 в данной строчке
+                else: #если уже построена
+                    matrix[i] = (matrix[i] + matrix[curRow]) % 2 #обнуляем 1 в данной строчке
+        if matrix[curRow][j] == 1: #если в даном столбце построили новую ступеньку
+            for i in range(curRow): #по уже построенным ступенькам
+                if matrix[i][j] == 1: #в этой строчке на данном столбце 1 быть не может
+                    matrix[i] = (matrix[i] + matrix[curRow]) % 2 #складываем строки
+            curRow += 1 #начинаем строить следующую ступеньку
+            if curRow == k: #если все ступеньки построены, выходим
+                break
+    return matrix[0:curRow]
 
 # Убираем нулевые строчки
 def no_zero_matrix(matrix):
