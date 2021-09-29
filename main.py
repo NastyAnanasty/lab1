@@ -6,7 +6,6 @@ import numpy as np
 # Создаем рандомную матрицу, заполненную 0 и 1 по заданному количеству строк и столбцов
 def create_matrix(row, column):
     matrix = np.random.randint(0, 9, (row, column))
-    print(matrix)
     for r in range(0, row):
         matrix[r] = matrix[r] % 2
     return matrix
@@ -84,14 +83,50 @@ def no_zero_matrix(matrix):
             r += 1  # Если ничего не удаляли, то переходим к новой строчке
     return matrix
 
+def all_perm(matrix):
+    matr = rref(matrix)
+    k = np.shape(matr)[0]
+    k2 = 2 ** k
+    new_matrix = np.array([[0] * k])
+    for i in range(k2):
+        inline_array = np.zeros(k, dtype = int)
+        bin_number = f"{i:b}"
+        j = len(bin_number) - 1
+        z = 0
+        while j >= 0:
+            inline_array[k - z - 1] = bin_number[j]
+            z+=1
+            j-=1
+        new_matrix = np.append(new_matrix, [inline_array], axis = 0)
+    return new_matrix
+
+def mult_k_g(matrix):
+    return np.matmul(all_perm(matrix), rref(matrix))
+
+def distance(matrix):
+    all_words = mult_k_g(matrix)
+    min_count = np.shape(all_words)[1]
+    for i in range(len(all_words)):
+        for j in range(i + 1, len(all_words)):
+            temp = 0
+            for k in range(np.shape(all_words)[1]):
+                if all_words[i][k] != all_words[j][k]:
+                    temp += 1
+            if temp < min_count: min_count = temp
+    return min_count
+
+
 
 if __name__ == '__main__':
-    rand_matrix = create_matrix(10, 5)  # Создаем матрицу, размер пишем в ()
+    matrix = create_matrix(10, 5)  # Создаем матрицу, размер пишем в ()
     print('Исходная матрица: ')
-    print(rand_matrix)
-    step_matrix = ref(rand_matrix)
-    print('Ступенчатая матрица:')
-    print(step_matrix)
-    no_zero = no_zero_matrix(step_matrix)
-    print('Ступенчатая матрица без нулей:')
-    print(no_zero)
+    print(matrix)
+    matrix1 = all_perm(matrix)
+    print('Матрица всех возможных комбинаций длины n: ')
+    print(matrix1)
+    matrix2 = mult_k_g(matrix)
+    print('Произведения матрицы всех возможных комбинаций длины n и матрицы  приведённого ступенчатого вида: ')
+    print(matrix2)
+    min_distance = distance(matrix)
+    print('Минимальное расстояние между кодами: ')
+    print(min_distance)
