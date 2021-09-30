@@ -169,7 +169,57 @@ def final_task(matrix):
     arr.append(r)
     return np.matmul(arr, h())
 
+class LinearMatrix(object):
 
+    def __init__(self, matrix):
+        self.matrix = matrix
+        self.n = 0  # число столбцов
+        self.k = 0  # число строк
+        self.lead_columns = []  # лидирующие столбцы ступенчатой матрицы
+
+    def rref(self):
+        new_matrix = rref(self.matrix)
+        self.n = column_size(new_matrix)
+        self.k = row_size(new_matrix)
+        return new_matrix
+
+    def get_leading(self):
+        lead = []
+
+        for i in range(0, self.n - 1):
+            for j in range(len(lead) - 1, self.k - 1):
+                if self.matrix[j][i] == 1:
+                    lead.append(i)
+                    break
+
+        return lead
+
+    def get_short_matrix(self):
+        lead_columns = self.get_leading
+        self.lead_columns = lead_columns
+        print(lead_columns)
+        short_matrix = np.delete(self.matrix, lead_columns, 1)
+        return short_matrix
+
+    def getH(self):
+        self.matrix = self.rref()
+
+        short_matrix = self.get_short_matrix()
+        identity_matrix = np.identity(self.k)
+
+        h_matrix_rows = self.k + row_size(short_matrix)
+        h_matrix = create_matrix(h_matrix_rows, self.k)
+
+        j = 0
+        for i in range(0, h_matrix_rows - 1):
+            if (self.lead_columns.count(i) > 0):
+                index = self.lead_columns.index(i)
+                h_matrix[i] = short_matrix[index]
+            else:
+                h_matrix[i] = identity_matrix[j]
+                j += 1
+
+        return h_matrix
 
 if __name__ == '__main__':
     matrix = create_matrix(10, 5)  # Создаем матрицу, размер пишем в ()
@@ -186,4 +236,7 @@ if __name__ == '__main__':
     print(min_distance)
     print(error_check(matrix))
     print(final_task(matrix))
-    
+
+    rand_matrix = create_matrix(5, 10)  # Создаем матрицу, размер пишем в ()
+    linear_matrix = LinearMatrix(rand_matrix)
+    print('Матрица Н: \n' + linear_matrix.getH())
