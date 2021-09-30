@@ -98,9 +98,10 @@ def all_perm(matrix):
             z+=1
             j-=1
         new_matrix = np.append(new_matrix, [inline_array], axis = 0)
-    return new_matrix
+    return np.delete(new_matrix, 0, 0)
 
 def mult_k_g(matrix):
+    print(rref(matrix))
     return np.matmul(all_perm(matrix), rref(matrix))
 
 def distance(matrix):
@@ -116,47 +117,47 @@ def distance(matrix):
     return min_count
 
 def error_check(matrix):
-    def t = distance(matrix) - 1
-    def g = rref(matrix)
-    def count = np.shape(g)[1]
-    def need_to_brake = false
-    def i = 0
+    t = distance(matrix) - 1
+    g = rref(matrix)
+    count = np.shape(g)[1]
+    need_to_brake = False
+    i = 0
 
     for i in range(len(g)):
         if (need_to_brake):
             break
-        def temp = 0
-        for j in range(countElem):
+        temp = 0
+        for j in range(count):
             if g[i][j] == 0:
                 temp += 1
             if temp == t:
-                need_to_brake = true
+                need_to_brake = True
     
-    def temp_row = g[i].slice()
-    for k in range(countElem):
+    temp_row = g[i][0:]
+    for k in range(count):
         if temp_row[k] == 0:
             temp_row[k] = 1
-            j++
+            j += 1
         if j == t:
             break
-    print('Массив с добавленной ошибкой - ' + temp_row + '\n Номер строки в матрице g - ' + i)
-    def h = h()
-    def arr = []    
+    print("Массив с добавленной ошибкой - {} \n Номер строки в матрице g - {}".format(temp_row, i))
+    h = h()
+    arr = []    
     arr.append(temp_row)
-    def mult_t_row_h = np.matmul(arr, h)
+    mult_t_row_h = np.matmul(arr, h)
     print(mult_t_row_h)
     
 def final_task(matrix):
-    def d = distance(matrix)
-    def c = mult_k_g(matrix)
-    def row = 0
-    def k = 0
+    d = distance(matrix)
+    c = mult_k_g(matrix)
+    row = 0
+    k = 0
     for i in range(len(c)):
         k = 0
         for j in range(len(c[i])):
             if c[i][j] == true:
-                k++
-            if k == d
+                k += 1
+            if k == d:
                 row = i
                 break
     
@@ -164,15 +165,15 @@ def final_task(matrix):
         if c[row][i] == true:
             c[0][i] = 1
     
-    def r = c[0]
-    def arr = []
+    r = c[0]
+    arr = []
     arr.append(r)
     return np.matmul(arr, h())
 
 
 
 if __name__ == '__main__':
-    matrix = create_matrix(10, 5)  # Создаем матрицу, размер пишем в ()
+    matrix = create_matrix(5, 5)  # Создаем матрицу, размер пишем в ()
     print('Исходная матрица: ')
     print(matrix)
     matrix1 = all_perm(matrix)
@@ -186,4 +187,3 @@ if __name__ == '__main__':
     print(min_distance)
     print(error_check(matrix))
     print(final_task(matrix))
-    
