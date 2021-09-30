@@ -186,7 +186,7 @@ class LinearMatrix(object):
     def get_leading(self):
         lead = []
 
-        for i in range(0, self.n - 1):
+        for i in range(self.n - 1):
             for j in range(len(lead) - 1, self.k - 1):
                 if self.matrix[j][i] == 1:
                     lead.append(i)
