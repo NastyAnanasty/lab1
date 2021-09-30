@@ -115,6 +115,60 @@ def distance(matrix):
             if temp < min_count: min_count = temp
     return min_count
 
+def error_check(matrix):
+    def t = distance(matrix) - 1
+    def g = rref(matrix)
+    def count = np.shape(g)[1]
+    def need_to_brake = false
+    def i = 0
+
+    for i in range(len(g)):
+        if (need_to_brake):
+            break
+        def temp = 0
+        for j in range(countElem):
+            if g[i][j] == 0:
+                temp += 1
+            if temp == t:
+                need_to_brake = true
+    
+    def temp_row = g[i].slice()
+    for k in range(countElem):
+        if temp_row[k] == 0:
+            temp_row[k] = 1
+            j++
+        if j == t:
+            break
+    print('Массив с добавленной ошибкой - ' + temp_row + '\n Номер строки в матрице g - ' + i)
+    def h = h()
+    def arr = []    
+    arr.append(temp_row)
+    def mult_t_row_h = np.matmul(arr, h)
+    print(mult_t_row_h)
+    
+def final_task(matrix):
+    def d = distance(matrix)
+    def c = mult_k_g(matrix)
+    def row = 0
+    def k = 0
+    for i in range(len(c)):
+        k = 0
+        for j in range(len(c[i])):
+            if c[i][j] == true:
+                k++
+            if k == d
+                row = i
+                break
+    
+    for i in range(len(c)):
+        if c[row][i] == true:
+            c[0][i] = 1
+    
+    def r = c[0]
+    def arr = []
+    arr.append(r)
+    return np.matmul(arr, h())
+
 
 
 if __name__ == '__main__':
@@ -130,3 +184,6 @@ if __name__ == '__main__':
     min_distance = distance(matrix)
     print('Минимальное расстояние между кодами: ')
     print(min_distance)
+    print(error_check(matrix))
+    print(final_task(matrix))
+    
