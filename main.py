@@ -162,8 +162,8 @@ def mult_k_g(matrix):
 def distance(matrix):
     all_words = mult_k_g(matrix)
     min_count = np.shape(all_words)[1]
-    for i in range(len(all_words)):
-        for j in range(i + 1, len(all_words)):
+    for i in range(row_size(all_words)):
+        for j in range(i + 1, row_size(all_words)):
             temp = 0
             for k in range(np.shape(all_words)[1]):
                 if all_words[i][k] != all_words[j][k]:
@@ -178,7 +178,7 @@ def error_check(matrix):
     need_to_brake = False
     i = 0
 
-    for i in range(len(g)):
+    for i in range(row_size(g)):
         if need_to_brake:
             break
         temp = 0
@@ -208,7 +208,7 @@ def final_task(matrix):
     c = mult_k_g(matrix)
     row = 0
     k = 0
-    for i in range(len(c)):
+    for i in range(row_size(c)):
         k = 0
         for j in range(len(c[i])):
             if c[i][j] == True:
@@ -217,7 +217,7 @@ def final_task(matrix):
                 row = i
                 break
     
-    for i in range(len(c)):
+    for i in range(column_size(c)):
         if c[row][i] == True:
             c[0][i] = 1
     
@@ -227,7 +227,14 @@ def final_task(matrix):
     return np.matmul(arr, LinearMatrix(matrix).getH())
     
 if __name__ == '__main__':
-    rand_matrix = create_matrix(5, 10)  # Создаем матрицу, размер пишем в ()
+    #rand_matrix = create_matrix(5, 10)  # Создаем матрицу, размер пишем в ()
+    matrix = [
+      [1, 0, 1, 1, 0, 0, 0, 1, 0, 0],
+      [1, 0, 0, 1, 1, 1, 0, 1, 0, 1],
+      [1, 0, 0, 0, 1, 0, 0, 1, 0, 0],
+      [1, 0, 1, 1, 0, 0, 1, 0, 0, 1],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ];
     linear_matrix = LinearMatrix(rand_matrix)
     h_matrix = linear_matrix.getH()
     print("матрица H: ")
