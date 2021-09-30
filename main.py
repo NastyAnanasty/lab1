@@ -86,42 +86,6 @@ def no_zero_matrix(matrix):
             r += 1  # Если ничего не удаляли, то переходим к новой строчке
     return matrix
 
-
-def all_perm(matrix):
-    matr = rref(matrix)
-    k = np.shape(matr)[0]
-    k2 = 2 ** k
-    new_matrix = np.array([[0] * k])
-    for i in range(k2):
-        inline_array = np.zeros(k, dtype=int)
-        bin_number = f"{i:b}"
-        j = len(bin_number) - 1
-        z = 0
-        while j >= 0:
-            inline_array[k - z - 1] = bin_number[j]
-            z += 1
-            j -= 1
-        new_matrix = np.append(new_matrix, [inline_array], axis=0)
-    return new_matrix
-
-
-def mult_k_g(matrix):
-    return np.matmul(all_perm(matrix), rref(matrix))
-
-
-def distance(matrix):
-    all_words = mult_k_g(matrix)
-    min_count = np.shape(all_words)[1]
-    for i in range(len(all_words)):
-        for j in range(i + 1, len(all_words)):
-            temp = 0
-            for k in range(np.shape(all_words)[1]):
-                if all_words[i][k] != all_words[j][k]:
-                    temp += 1
-            if temp < min_count: min_count = temp
-    return min_count
-
-
 class LinearMatrix(object):
 
     def __init__(self, matrix):
@@ -174,10 +138,103 @@ class LinearMatrix(object):
 
         return h_matrix
 
+def all_perm(matrix):
+    matr = rref(matrix)
+    k = np.shape(matr)[0]
+    k2 = 2 ** k
+    new_matrix = np.array([[0] * k])
+    for i in range(k2):
+        inline_array = np.zeros(k, dtype = int)
+        bin_number = f"{i:b}"
+        j = len(bin_number) - 1
+        z = 0
+        while j >= 0:
+            inline_array[k - z - 1] = bin_number[j]
+            z+=1
+            j-=1
+        new_matrix = np.append(new_matrix, [inline_array], axis = 0)
+    return np.delete(new_matrix, 0, 0)
 
+def mult_k_g(matrix):
+    print(rref(matrix))
+    return np.matmul(all_perm(matrix), rref(matrix))
+
+def distance(matrix):
+    all_words = mult_k_g(matrix)
+    min_count = np.shape(all_words)[1]
+    for i in range(len(all_words)):
+        for j in range(i + 1, len(all_words)):
+            temp = 0
+            for k in range(np.shape(all_words)[1]):
+                if all_words[i][k] != all_words[j][k]:
+                    temp += 1
+            if temp < min_count: min_count = temp
+    return min_count
+
+def error_check(matrix):
+    t = distance(matrix) - 1
+    g = rref(matrix)
+    count = np.shape(g)[1]
+    need_to_brake = False
+    i = 0
+
+    for i in range(len(g)):
+        if need_to_brake:
+            break
+        temp = 0
+        for j in range(count):
+            if g[i][j] == 0:
+                temp += 1
+            if temp == t:
+                need_to_brake = True
+                break
+    
+    temp_row = g[i][0:]
+    for k in range(count):
+        if temp_row[k] == 0:
+            temp_row[k] = 1
+            j += 1
+        if j == t:
+            break
+    print("Массив с добавленной ошибкой - {} \n Номер строки в матрице g - {}".format(temp_row, i))
+    h = LinearMatrix(matrix).getH()
+    arr = []    
+    arr.append(temp_row)
+    mult_t_row_h = np.matmul(arr, h)
+    print(mult_t_row_h)
+    
+def final_task(matrix):
+    d = distance(matrix)
+    c = mult_k_g(matrix)
+    row = 0
+    k = 0
+    for i in range(len(c)):
+        k = 0
+        for j in range(len(c[i])):
+            if c[i][j] == True:
+                k += 1
+            if k == d:
+                row = i
+                break
+    
+    for i in range(len(c)):
+        if c[row][i] == True:
+            c[0][i] = 1
+    
+    r = c[0]
+    arr = []
+    arr.append(r)
+    return np.matmul(arr, LinearMatrix(matrix).getH())
+    
 if __name__ == '__main__':
     rand_matrix = create_matrix(5, 10)  # Создаем матрицу, размер пишем в ()
     linear_matrix = LinearMatrix(rand_matrix)
     h_matrix = linear_matrix.getH()
     print("матрица H: ")
     print(h_matrix)
+    print(linear_matrix)
+    print(all_perm(rand_matrix))
+    print(mult_k_g(rand_matrix))
+    print(distance(rand_matrix))
+    error_check(rand_matrix)
+    print(final_task(rand_matrix))
