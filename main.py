@@ -2,9 +2,6 @@ import copy
 
 import numpy as np
 
-import os
-
-
 # Создаем рандомную матрицу, заполненную 0 и 1 по заданному количеству строк и столбцов
 def create_matrix(row, column):
     matrix = np.random.randint(0, 9, (row, column))
@@ -86,12 +83,14 @@ def no_zero_matrix(matrix):
             r += 1  # Если ничего не удаляли, то переходим к новой строчке
     return matrix
 
+
 class LinearMatrix(object):
 
     def __init__(self, matrix):
         self.matrix = matrix
-        self.n = 0  # число столбцов
-        self.k = 0  # число строк
+        self.ref_matrix = ref(self.matrix)
+        self.n = self.ref_matrix.shape[1]# число столбцов
+        self.k = self.ref_matrix.shape[0]  # число строк
         self.lead_columns = []  # лидирующие столбцы ступенчатой матрицы
 
     def rref(self):
@@ -110,7 +109,7 @@ class LinearMatrix(object):
                         lead.append(i)
                         break
 
-        print(lead)
+        # print(lead)
         return lead
 
     def get_short_matrix(self):
@@ -138,110 +137,75 @@ class LinearMatrix(object):
 
         return h_matrix
 
-def all_perm(matrix):
-    matr = rref(matrix)
-    k = np.shape(matr)[0]
-    k2 = 2 ** k
-    new_matrix = np.array([[0] * k])
-    for i in range(k2):
-        inline_array = np.zeros(k, dtype = int)
-        bin_number = f"{i:b}"
-        j = len(bin_number) - 1
-        z = 0
-        while j >= 0:
-            inline_array[k - z - 1] = bin_number[j]
-            z+=1
-            j-=1
-        new_matrix = np.append(new_matrix, [inline_array], axis = 0)
-    return np.delete(new_matrix, 0, 0)
+    def allowed_words(self):
+        ref_matrix = ref(self.matrix)
+        words = ref_matrix.copy()
+        words = np.vstack([words, np.zeros(words.shape[1], dtype=int)])
+        for i in range(ref_matrix.shape[0] - 1):
+            for j in range(i + 1, ref_matrix.shape[0]):
+                row = (ref_matrix[i] + ref_matrix[j]) % 2
+                append = True
+                for k in range(words.shape[0]):
+                    if np.array_equal(words[k], row):
+                        append = False
+                        break
+                if append:
+                    words = np.vstack([words, row])
+        return words
 
-def mult_k_g(matrix):
-    print(rref(matrix))
-    return np.matmul(all_perm(matrix), rref(matrix))
+    def k_allowed_words(self):
+        I = np.mat(np.eye(self.k, dtype=int))
+        words = I.copy()
+        index_to_add = I.shape[0]
+        for i in range(index_to_add):
+            for j in range(0, I.shape[0]):
+                row = (I[i] + I[j]) % 2
+                append = True
+                for k in range(0, words.shape[0]):
+                    if np.array_equal(words[k], row):
+                        append = False
+                        break
+                if append:
+                    words = np.vstack([words, row])
+                    index_to_add += 1
+        return words @ ref(self.matrix) % 2
 
-def distance(matrix):
-    all_words = mult_k_g(matrix)
-    min_count = np.shape(all_words)[1]
-    for i in range(row_size(all_words)):
-        for j in range(i + 1, row_size(all_words)):
-            temp = 0
-            for k in range(np.shape(all_words)[1]):
-                if all_words[i][k] != all_words[j][k]:
-                    temp += 1
-            if temp < min_count: min_count = temp
-    return min_count
+    def distance(self):
+        d = self.ref_matrix.shape[1]
+        for i in range(self.ref_matrix.shape[0]):
+            for j in range(i + 1, self.ref_matrix.shape[0]):
+                d = min(np.count_nonzero((self.ref_matrix[j] - self.ref_matrix[i]) % 2), d)
+        t = d - 1
+        print("d = ", d)
+        print("t = ", t)
 
-def error_check(matrix):
-    t = distance(matrix) - 1
-    g = rref(matrix)
-    count = np.shape(g)[1]
-    need_to_brake = False
-    i = 0
 
-    for i in range(row_size(g)):
-        if need_to_brake:
-            break
-        temp = 0
-        for j in range(count):
-            if g[i][j] == 0:
-                temp += 1
-            if temp == t:
-                need_to_brake = True
-                break
-    
-    temp_row = g[i][0:]
-    for k in range(count):
-        if temp_row[k] == 0:
-            temp_row[k] = 1
-            j += 1
-        if j == t:
-            break
-    print("Массив с добавленной ошибкой - {} \n Номер строки в матрице g - {}".format(temp_row, i))
-    h = LinearMatrix(matrix).getH()
-    arr = []    
-    arr.append(temp_row)
-    mult_t_row_h = np.matmul(arr, h)
-    print(mult_t_row_h)
-    
-def final_task(matrix):
-    d = distance(matrix)
-    c = mult_k_g(matrix)
-    row = 0
-    k = 0
-    for i in range(row_size(c)):
-        k = 0
-        for j in range(len(c[i])):
-            if c[i][j] == True:
-                k += 1
-            if k == d:
-                row = i
-                break
-    
-    for i in range(column_size(c)):
-        if c[row][i] == True:
-            c[0][i] = 1
-    
-    r = c[0]
-    arr = []
-    arr.append(r)
-    return np.matmul(arr, LinearMatrix(matrix).getH())
-    
 if __name__ == '__main__':
-    #rand_matrix = create_matrix(5, 10)  # Создаем матрицу, размер пишем в ()
-    matrix = [
-      [1, 0, 1, 1, 0, 0, 0, 1, 0, 0],
-      [1, 0, 0, 1, 1, 1, 0, 1, 0, 1],
-      [1, 0, 0, 0, 1, 0, 0, 1, 0, 0],
-      [1, 0, 1, 1, 0, 0, 1, 0, 0, 1],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    ];
-    linear_matrix = LinearMatrix(rand_matrix)
-    h_matrix = linear_matrix.getH()
-    print("матрица H: ")
-    print(h_matrix)
-    print(linear_matrix)
-    print(all_perm(rand_matrix))
-    print(mult_k_g(rand_matrix))
-    print(distance(rand_matrix))
-    error_check(rand_matrix)
-    print(final_task(rand_matrix))
+    rand_matrix = create_matrix(5, 10)
+
+    matrix = np.array([[1, 0, 1, 1, 0, 0, 0, 1, 0, 0],
+                      [0, 0, 0, 1, 1, 1, 0, 1, 0, 1],
+                      [0, 0, 0, 0, 1, 0, 0, 1, 0, 0],
+                      [1, 0, 1, 0, 1, 1, 1, 0, 0, 0],
+                      [0, 0, 0, 0, 1, 0, 0, 1, 1, 1]])
+    linear_matrix = LinearMatrix(matrix)
+
+    print("H = ", linear_matrix.getH())
+    allowed_words = linear_matrix.allowed_words()
+    k_allowed_words = linear_matrix.k_allowed_words()
+    print(allowed_words)
+    print(k_allowed_words)
+    linear_matrix.distance()
+
+    # фиксируем входное слово
+    v = np.mat([[0, 0, 0, 0, 1, 0, 0, 1, 1, 1]])
+
+    # вносим ошибку одинарной кратности
+    e1 = np.mat([[0, 0, 0, 0, 0, 0, 0, 0, 0, 1]])
+    print("v + e1 =", (v + e1) % 2)
+    print("(v + e1)@H =", (v + e1) @ linear_matrix.getH() % 2)
+
+    # вносим ошибку двойной кратности
+    e2 = np.mat([[0, 0, 0, 0, 0, 0, 0, 0, 1, 1]])
+    print("v + e2 =", (v + e2) % 2)
+    print("(v + e1)@H =", (v + e2) @ linear_matrix.getH() % 2)
