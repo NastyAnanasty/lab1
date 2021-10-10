@@ -50,27 +50,28 @@ def ref(matrix):
     return matrix  # Возвращаем полученную матрицу
 
 
-def rref(originalMatrix): #приведённый ступенчатый вид
+def rref(originalMatrix):  # приведённый ступенчатый вид
     matrix = copy.deepcopy(no_zero_matrix(originalMatrix))
     k = matrix.shape[0]
     n = matrix.shape[1]
-    curRow = 0 #текущая ступенька
-    for j in range(n): #проходим по всем столбцам
-        for i in range(curRow + 1, k): #по строкам кроме уже построенных ступенек
-            if matrix[i][j] == 1: #в этой строчке на данном столбце единиц быть не может
-                if matrix[curRow][j] == 0: #если ступенька не построена
-                    matrix[curRow] = (matrix[i] + matrix[curRow]) % 2 #строим ступеньку
-                    matrix[i] = (matrix[i] + matrix[curRow]) % 2 #обнуляем единицы в данной строчке
-                else: #если уже построена
-                    matrix[i] = (matrix[i] + matrix[curRow]) % 2 #обнуляем единицы в данной строчке
-        if matrix[curRow][j] == 1: #если в даном столбце построили новую ступеньку
-            for i in range(curRow): #по уже построенным ступенькам
-                if matrix[i][j] == 1: #в этой строчке на данном столбце единиц быть не может
-                    matrix[i] = (matrix[i] + matrix[curRow]) % 2 #складываем строки
-            curRow += 1 #начинаем строить следующую ступеньку
-            if curRow == k: #если все ступеньки построены, выходим
+    curRow = 0  # текущая ступенька
+    for j in range(n):  # проходим по всем столбцам
+        for i in range(curRow + 1, k):  # по строкам кроме уже построенных ступенек
+            if matrix[i][j] == 1:  # в этой строчке на данном столбце единиц быть не может
+                if matrix[curRow][j] == 0:  # если ступенька не построена
+                    matrix[curRow] = (matrix[i] + matrix[curRow]) % 2  # строим ступеньку
+                    matrix[i] = (matrix[i] + matrix[curRow]) % 2  # обнуляем единицы в данной строчке
+                else:  # если уже построена
+                    matrix[i] = (matrix[i] + matrix[curRow]) % 2  # обнуляем единицы в данной строчке
+        if matrix[curRow][j] == 1:  # если в даном столбце построили новую ступеньку
+            for i in range(curRow):  # по уже построенным ступенькам
+                if matrix[i][j] == 1:  # в этой строчке на данном столбце единиц быть не может
+                    matrix[i] = (matrix[i] + matrix[curRow]) % 2  # складываем строки
+            curRow += 1  # начинаем строить следующую ступеньку
+            if curRow == k:  # если все ступеньки построены, выходим
                 break
     return matrix[0:curRow]
+
 
 # Убираем нулевые строчки
 def no_zero_matrix(matrix):
@@ -83,107 +84,127 @@ def no_zero_matrix(matrix):
             r += 1  # Если ничего не удаляли, то переходим к новой строчке
     return matrix
 
-def all_perm(matrix):
-    matr = rref(matrix)
-    k = np.shape(matr)[0]
-    k2 = 2 ** k
-    new_matrix = np.array([[0] * k])
-    for i in range(k2):
-        inline_array = np.zeros(k, dtype = int)
-        bin_number = f"{i:b}"
-        j = len(bin_number) - 1
-        z = 0
-        while j >= 0:
-            inline_array[k - z - 1] = bin_number[j]
-            z+=1
-            j-=1
-        new_matrix = np.append(new_matrix, [inline_array], axis = 0)
-    return np.delete(new_matrix, 0, 0)
 
-def mult_k_g(matrix):
-    print(rref(matrix))
-    return np.matmul(all_perm(matrix), rref(matrix))
+class LinearMatrix(object):
 
-def distance(matrix):
-    all_words = mult_k_g(matrix)
-    min_count = np.shape(all_words)[1]
-    for i in range(len(all_words)):
-        for j in range(i + 1, len(all_words)):
-            temp = 0
-            for k in range(np.shape(all_words)[1]):
-                if all_words[i][k] != all_words[j][k]:
-                    temp += 1
-            if temp < min_count: min_count = temp
-    return min_count
+    def __init__(self, matrix):
+        self.matrix = matrix
+        self.ref_matrix = ref(self.matrix)
+        self.n = self.ref_matrix.shape[1]  # число столбцов
+        self.k = self.ref_matrix.shape[0]  # число строк
+        self.lead_columns = []  # лидирующие столбцы ступенчатой матрицы
 
-def error_check(matrix):
-    t = distance(matrix) - 1
-    g = rref(matrix)
-    count = np.shape(g)[1]
-    need_to_brake = False
-    i = 0
+    def rref(self):
+        new_matrix = rref(self.matrix)
+        self.n = column_size(new_matrix)
+        self.k = row_size(new_matrix)
+        return new_matrix
 
-    for i in range(len(g)):
-        if (need_to_brake):
-            break
-        temp = 0
-        for j in range(count):
-            if g[i][j] == 0:
-                temp += 1
-            if temp == t:
-                need_to_brake = True
-    
-    temp_row = g[i][0:]
-    for k in range(count):
-        if temp_row[k] == 0:
-            temp_row[k] = 1
-            j += 1
-        if j == t:
-            break
-    print("Массив с добавленной ошибкой - {} \n Номер строки в матрице g - {}".format(temp_row, i))
-    h = h()
-    arr = []    
-    arr.append(temp_row)
-    mult_t_row_h = np.matmul(arr, h)
-    print(mult_t_row_h)
-    
-def final_task(matrix):
-    d = distance(matrix)
-    c = mult_k_g(matrix)
-    row = 0
-    k = 0
-    for i in range(len(c)):
-        k = 0
-        for j in range(len(c[i])):
-            if c[i][j] == true:
-                k += 1
-            if k == d:
-                row = i
-                break
-    
-    for i in range(len(c)):
-        if c[row][i] == true:
-            c[0][i] = 1
-    
-    r = c[0]
-    arr = []
-    arr.append(r)
-    return np.matmul(arr, h())
+    def get_leading(self):
+        lead = []
 
+        for i in range(self.n):
+            if len(lead) < self.k:
+                for j in range(len(lead), self.k):
+                    if self.matrix[j][i] == 1:
+                        lead.append(i)
+                        break
+
+        # print(lead)
+        return lead
+
+    def get_short_matrix(self):
+        self.lead_columns = self.get_leading()
+        short_matrix = np.delete(self.matrix, self.lead_columns, 1)
+        return short_matrix
+
+    def getH(self):
+        self.matrix = self.rref()
+
+        short_matrix = self.get_short_matrix()
+        identity_matrix = np.identity(self.k)
+
+        h_matrix_rows = self.k + row_size(short_matrix)
+        h_matrix = create_matrix(h_matrix_rows, self.k)
+
+        j = 0
+        for i in range(0, h_matrix_rows):
+            if self.lead_columns.count(i) > 0:
+                index = self.lead_columns.index(i)
+                h_matrix[i] = short_matrix[index]
+            else:
+                h_matrix[i] = identity_matrix[j]
+                j += 1
+
+        return h_matrix
+
+    def admitted_words(self):
+        ref_matrix = ref(self.matrix)
+        words = ref_matrix.copy()
+        words = np.vstack([words, np.zeros(words.shape[1], dtype=int)])
+        for i in range(ref_matrix.shape[0] - 1):
+            for j in range(i + 1, ref_matrix.shape[0]):
+                row = (ref_matrix[i] + ref_matrix[j]) % 2
+                append = True
+                for k in range(words.shape[0]):
+                    if np.array_equal(words[k], row):
+                        append = False
+                        break
+                if append:
+                    words = np.vstack([words, row])
+        return words
+
+    def k_admitted_words(self):
+        I = np.mat(np.eye(self.k, dtype=int))
+        words = I.copy()
+        index_to_add = I.shape[0]
+        for i in range(index_to_add):
+            for j in range(0, I.shape[0]):
+                row = (I[i] + I[j]) % 2
+                append = True
+                for k in range(0, words.shape[0]):
+                    if np.array_equal(words[k], row):
+                        append = False
+                        break
+                if append:
+                    words = np.vstack([words, row])
+                    index_to_add += 1
+        return words @ ref(self.matrix) % 2
+
+    def distance(self):
+        d = self.ref_matrix.shape[1]
+        for i in range(self.ref_matrix.shape[0]):
+            for j in range(i + 1, self.ref_matrix.shape[0]):
+                d = min(np.count_nonzero((self.ref_matrix[j] - self.ref_matrix[i]) % 2), d)
+        t = d - 1
+        print("d = ", d)
+        print("t = ", t)
 
 
 if __name__ == '__main__':
-    matrix = create_matrix(5, 5)  # Создаем матрицу, размер пишем в ()
-    print('Исходная матрица: ')
-    print(matrix)
-    matrix1 = all_perm(matrix)
-    print('Матрица всех возможных комбинаций длины n: ')
-    print(matrix1)
-    matrix2 = mult_k_g(matrix)
-    print('Произведения матрицы всех возможных комбинаций длины n и матрицы  приведённого ступенчатого вида: ')
-    print(matrix2)
-    min_distance = distance(matrix)
-    print('Минимальное расстояние между кодами: ')
-    print(min_distance)
-    print(error_check(matrix))
-    print(final_task(matrix))
+    matrix = np.array([[1, 0, 1, 1, 0, 0, 0, 1, 0, 0],
+                       [0, 0, 0, 1, 1, 1, 0, 1, 0, 1],
+                       [0, 0, 0, 0, 1, 0, 0, 1, 0, 0],
+                       [1, 0, 1, 0, 1, 1, 1, 0, 0, 0],
+                       [0, 0, 0, 0, 1, 0, 0, 1, 1, 1]])
+    linear_matrix = LinearMatrix(matrix)
+
+    print("H = ", linear_matrix.getH())
+    allowed_words = linear_matrix.admitted_words()
+    k_allowed_words = linear_matrix.k_admitted_words()
+    print(allowed_words)
+    print(k_allowed_words)
+    linear_matrix.distance()
+
+    # фиксируем входное слово
+    v = np.mat([[0, 0, 0, 0, 1, 0, 0, 1, 1, 1]])
+
+    # вносим ошибку одинарной кратности
+    e1 = np.mat([[0, 0, 0, 0, 0, 0, 0, 0, 0, 1]])
+    print("v + e1 =", (v + e1) % 2)
+    print("(v + e1)@H =", (v + e1) @ linear_matrix.getH() % 2)
+
+    # вносим ошибку двойной кратности
+    e2 = np.mat([[0, 0, 0, 0, 0, 0, 0, 0, 1, 1]])
+    print("v + e2 =", (v + e2) % 2)
+    print("(v + e1)@H =", (v + e2) @ linear_matrix.getH() % 2)
